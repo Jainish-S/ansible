@@ -1,0 +1,28 @@
+- name: Harpoon exists
+  stat:
+    path: "{{ personal }}/harpoon"
+  register: harpoon
+  tags:
+    - install
+    - dotfiles
+    - neovim
+    - personal-project
+- name: Personal Project Harpoon
+  ansible.builtin.git:
+    repo: 'https://github.com/ThePrimeagen/harpoon.git'
+    bare: true
+    dest: "{{ personal }}/harpoon"
+  tags:
+    - install
+    - dotfiles
+    - neovim
+    - personal-project
+  when: harpoon.stat.exists == False
+- name: Harpoon Master Checkout
+  shell: cd ~/personal/harpoon && git fetch && git worktree add master master
+  tags:
+    - install
+    - dotfiles
+    - neovim
+    - personal-project
+  when: harpoon.stat.exists == False
