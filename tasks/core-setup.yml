@@ -10,7 +10,7 @@
 - name: Install System Packages 2 (lua, unzip, libtool, libtool-bin, gettext)
   become: true
   apt:
-    name: [ "lua5.1", "unzip", "libtool", "libtool-bin", "gettext"]
+    name: ["lua5.1", "unzip", "libtool", "libtool-bin", "gettext"]
   tags:
     - install
     - neovim
@@ -19,7 +19,24 @@
 - name: Install System Packages 3 (the rest)
   become: true
   apt:
-    name: [ "compton", "curl", "htop", "golang", "lsof", "i3", "ccache", "ninja-build", "python3-pip", "dconf-editor", "nvidia-settings", "pavucontrol", "moreutils", "clangd", "ubuntu-mate-desktop" ]
+    name:
+      [
+        "compton",
+        "curl",
+        "htop",
+        "golang",
+        "lsof",
+        "i3",
+        "ccache",
+        "ninja-build",
+        "python3-pip",
+        "dconf-editor",
+        "nvidia-settings",
+        "pavucontrol",
+        "moreutils",
+        "clangd",
+        "ubuntu-mate-desktop",
+      ]
   tags:
     - install
     - core
@@ -27,21 +44,39 @@
 - name: Install Clang
   become: true
   apt:
-    name: ["clang", "clang-11", "clang-12", "clangd", "clangd-10", "clangd-11", "clangd-12"]
+    name:
+      [
+        "clang",
+        "clang-11",
+        "clang-12",
+        "clangd",
+        "clangd-10",
+        "clangd-11",
+        "clangd-12",
+      ]
   tags:
     - install
     - neovim
     - core
 
-- name: dconf i3
-  shell: dconf write /org/mate/desktop/session/required-components/windowmanager "'i3'"
+- name: Install Network Tools
+  become: true
+  apt:
+    name:
+      [
+        "net-tools",
+        "iputils-ping",
+        "traceroute",
+        "nmap",
+        "tcpdump",
+        "dnsutils",
+        "iperf3",
+        "openssh-client",
+        "rsync",
+        "wget",
+        "telnet",
+      ]
   tags:
     - install
     - core
-
-- name: dconf i3
-  shell: dconf write /org/mate/desktop/background/show-desktop-icons "false"
-  tags:
-    - install
-    - core
-
+    - network

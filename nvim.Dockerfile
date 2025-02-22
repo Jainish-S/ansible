@@ -12,4 +12,6 @@ RUN apt update && apt install -y apt-transport-https software-properties-common 
 
 COPY . .
 
+ENV USER=root
+
 CMD ["sh", "-c", "ansible-playbook $TAGS local.yml"]

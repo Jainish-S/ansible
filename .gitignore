@@ -1,0 +1,12 @@
+.ansible
+.oh-my-* 
+.zshrc 
+.zsh_history 
+.zcompdump* 
+.gitconfig* 
+.bash_history
+.npm
+.local
+.config 
+node_modules 
+package.json

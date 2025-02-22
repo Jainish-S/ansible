@@ -1,8 +1,11 @@
 - hosts: localhost
   vars:
-    source_key: ".ssh/id_rsa"
+    source_key: "./.ssh/id_rsa"
     dest_key: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa"
     personal: "{{ lookup('env', 'HOME') }}/personal"
+    ffmpeg_version: "7.1"
+    ffmpeg_source_dir: "/usr/local/src/ffmpeg"
+    ffmpeg_install_dir: "/usr/local"
   pre_tasks:
   - name: Update Apt
     become: true
@@ -14,10 +17,16 @@
       - install
       - core
   tasks:
+    - name: Get number of CPU cores
+      command: nproc
+      register: nproc_output
+      changed_when: false  
+      tags:
+        - install
+        - ffmpeg
     - include_tasks: tasks/ssh.yml
     - include_tasks: tasks/git-setup.yml
     - include_tasks: tasks/core-setup.yml
+    - include_tasks: tasks/ffmpeg-setup.yml
     - include_tasks: tasks/zsh-setup.yml
     - include_tasks: tasks/node-setup.yml
-    - include_tasks: tasks/npm-packages.yml
-

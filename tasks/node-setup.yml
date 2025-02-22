@@ -6,41 +6,46 @@
     - install
     - node
 
-- name: npmjs prefix
+- name: Create npm global directory
   shell: mkdir -p ~/.local/.npm-global
   tags:
-  - install
-  - node
+    - install
+    - node
 
-- name: add npmjs to path
-  shell: PATH=~/.local/.npm-global/bin:$PATH
-  tags:
-  - install
-  - node
-
-- name: npmjs global settings
+- name: Set npm global prefix
   shell: npm config set prefix '~/.local/.npm-global'
   tags:
-  - install
-  - node
+    - install
+    - node
 
-- name: npmjs global settings export path in case I don't have dotfiles installed
-  shell: export PATH=~/.local/.npm-global/bin:$PATH
+- name: Add npm global bin to Zsh PATH
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    line: 'export PATH="$HOME/.local/.npm-global/bin:$PATH"'
+    create: yes
+    mode: "0644"
   tags:
-  - install
-  - node
-  - npm-path
+    - install
+    - node
 
 - name: Install N
   npm:
     name: n
     global: yes
+    executable: /usr/bin/npm
+  environment:
+    PATH: "{{ ansible_env.HOME }}/.local/.npm-global/bin:{{ ansible_env.PATH }}"
   tags:
     - install
     - node
 
 - name: Install correct version of Node
+  become: true
   shell: n 20
+  environment:
+    PATH: "{{ ansible_env.HOME }}/.local/.npm-global/bin:{{ ansible_env.PATH }}"
+  args:
+    creates: "{{ ansible_env.HOME }}/.n/versions/node/20.*" 
   tags:
     - install
     - node

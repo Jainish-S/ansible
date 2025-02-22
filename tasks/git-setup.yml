@@ -1,28 +1,32 @@
-- name: Git personal setup email
-  git_config:
-    name: user.email
-    scope: global
-    value: "jainishsavalia@gmail.com"
+- name: Create personal gitconfig
+  copy:
+    content: |
+      [user]
+          email = jainishsavalia@gmail.com
+          name = Jainish Savalia
+    dest: "/home/jainish/.gitconfig-personal"
+    mode: "0644"
   tags:
-  - git-personal
-- name: Git personal setup name
-  git_config:
-    name: user.name
-    scope: global
-    value: "Jainish Savalia"
+    - git-personal
+- name: Create Genuin gitconfig
+  copy:
+    content: |
+      [user]
+          email = jainish@begenuin.com
+          name = Jainish Savalia
+    dest: "/home/jainish/.gitconfig-genuin"
+    mode: "0644"
   tags:
-  - git-personal
-- name: Genuin
-  git_config:
-    name: user.email
-    scope: global
-    value: "jainish@begenuin.com"
+    - git-genuin
+- name: Configure global gitconfig with includes
+  copy:
+    content: |
+      [includeIf "gitdir:~/personal/"]
+          path = ~/.gitconfig-personal
+      [includeIf "gitdir:~/work/"]
+          path = ~/.gitconfig-genuin
+    dest: "/home/jainish/.gitconfig"
+    mode: "0644"
   tags:
-  - git-genuin
-- name: Genuin
-  git_config:
-    name: user.name
-    scope: global
-    value: "Jainish Savalia"
-  tags:
-  - git-genuin
+    - git-personal
+    - git-genuin

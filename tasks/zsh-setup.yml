@@ -1,29 +1,51 @@
 - name: Install ZSH
-  apt: name=zsh
-  tags: &tags_for_zsh_tasks [ 'install', 'productivity', 'dotfiles', 'zsh' ]
+  become: true
+  apt:
+    name: zsh
+  tags: &tags_for_zsh_tasks ["install", "productivity", "dotfiles", "zsh"]
 
 - name: Change shell to zsh
+  become: true
   shell: chsh -s $(which zsh)
   tags: *tags_for_zsh_tasks
-  become: yes
 
-- name: Check that the somefile.conf exists
+- name: Check if oh-my-zsh is installed
   stat:
-    path: /home/jainish/.oh-my-zsh
+    path: ~/.oh-my-zsh
   register: oh_my_stats
   tags: *tags_for_zsh_tasks
 
-- name: Oh-My-Zsh
-  shell: curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh > ~/.oh-my-installer && chmod +x ~/.oh-my-installer && ~/.oh-my-installer
+- name: Install Oh-My-Zsh (unattended)
+  shell: >
+    curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh > ~/.oh-my-installer &&
+    chmod +x ~/.oh-my-installer &&
+    ~/.oh-my-installer --unattended
   tags: *tags_for_zsh_tasks
   when: oh_my_stats.stat.exists == False
-  become_user: jainish
 
 - name: Install zsh-autosuggestions
   ansible.builtin.git:
-    repo: 'https://github.com/zsh-users/zsh-autosuggestions.git'
+    repo: "https://github.com/zsh-users/zsh-autosuggestions.git"
     dest: "~/.oh-my-zsh/plugins/zsh-autosuggestions"
   tags: *tags_for_zsh_tasks
 
-- name: update zshrc
-  shell: sed -i "s/(git/(git zsh-autosuggestions/" ~/.zshrc
+- name: Install zsh-syntax-highlighting plugin
+  ansible.builtin.git:
+    repo: "https://github.com/zsh-users/zsh-syntax-highlighting.git"
+    dest: "~/.oh-my-zsh/plugins/zsh-syntax-highlighting"
+  tags: *tags_for_zsh_tasks
+
+- name: Update .zshrc plugins configuration
+  become: false
+  lineinfile:
+    path: "~/.zshrc"
+    regexp: "^plugins="
+    line: "plugins=(git zsh-autosuggestions zsh-syntax-highlighting)"
+    backup: yes
+  tags: *tags_for_zsh_tasks
+
+- name: Source updated .zshrc (for current session)
+  shell: source ~/.zshrc
+  args:
+    executable: /bin/zsh
+  tags: *tags_for_zsh_tasks

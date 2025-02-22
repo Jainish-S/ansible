@@ -1,0 +1,108 @@
+- name: Install build dependencies for FFmpeg
+  become: true
+  apt:
+    name:
+      - build-essential
+      - git
+      - nasm
+      - yasm
+      - pkg-config
+      - libass-dev
+      - libfreetype6-dev
+      - libmp3lame-dev
+      - libopus-dev
+      - libvorbis-dev
+      - libx264-dev
+      - libx265-dev
+      - libvpx-dev
+      - zlib1g-dev
+      - libssl-dev
+    state: present
+    update_cache: yes
+  tags:
+    - install
+    - ffmpeg
+
+- name: Create source directory for FFmpeg
+  become: true
+  file:
+    path: "{{ ffmpeg_source_dir }}"
+    state: directory
+    mode: "0755"
+  tags:
+    - install
+    - ffmpeg
+
+- name: Download FFmpeg source tarball
+  become: true
+  get_url:
+    url: "https://ffmpeg.org/releases/ffmpeg-{{ ffmpeg_version }}.tar.bz2"
+    dest: "{{ ffmpeg_source_dir }}/ffmpeg-{{ ffmpeg_version }}.tar.bz2"
+    mode: "0644"
+  tags:
+    - install
+    - ffmpeg
+
+- name: Extract FFmpeg source
+  become: true
+  unarchive:
+    src: "{{ ffmpeg_source_dir }}/ffmpeg-{{ ffmpeg_version }}.tar.bz2"
+    dest: "{{ ffmpeg_source_dir }}"
+    remote_src: yes
+    creates: "{{ ffmpeg_source_dir }}/ffmpeg-{{ ffmpeg_version }}"
+  tags:
+    - install
+    - ffmpeg
+
+- name: Configure FFmpeg build
+  become: true
+  command:
+    cmd: >
+      ./configure
+      --prefix={{ ffmpeg_install_dir }}
+      --enable-gpl
+      --enable-nonfree
+      --enable-libass
+      --enable-libfreetype
+      --enable-libmp3lame
+      --enable-libopus
+      --enable-libvorbis
+      --enable-libx264
+      --enable-libx265
+      --enable-libvpx
+      --enable-openssl
+    chdir: "{{ ffmpeg_source_dir }}/ffmpeg-{{ ffmpeg_version }}"
+    creates: "{{ ffmpeg_source_dir }}/ffmpeg-{{ ffmpeg_version }}/config.mak"
+  tags:
+    - install
+    - ffmpeg
+
+- name: Compile FFmpeg
+  become: true
+  command:
+    cmd: "make -j{{ nproc_output.stdout }}"
+    chdir: "{{ ffmpeg_source_dir }}/ffmpeg-{{ ffmpeg_version }}"
+    creates: "{{ ffmpeg_source_dir }}/ffmpeg-{{ ffmpeg_version }}/ffmpeg"
+  tags:
+    - install
+    - ffmpeg
+
+- name: Install FFmpeg
+  become: true
+  command:
+    cmd: make install
+    chdir: "{{ ffmpeg_source_dir }}/ffmpeg-{{ ffmpeg_version }}"
+    creates: "{{ ffmpeg_install_dir }}/bin/ffmpeg"
+  tags:
+    - install
+    - ffmpeg
+
+- name: Clean up FFmpeg source files (optional)
+  become: true
+  file:
+    path: "{{ ffmpeg_source_dir }}"
+    state: absent
+  tags:
+    - install
+    - ffmpeg
+    - cleanup
