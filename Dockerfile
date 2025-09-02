@@ -31,5 +31,5 @@ WORKDIR /home/$UNAME
 FROM j
 
 COPY --chown=$UNAME:$UNAME . .
-# ENTRYPOINT ["sh", "-c", "ansible-playbook $TAGS local.yml"]
+ENTRYPOINT ["sh", "-c", "ansible-playbook $TAGS local.yml"]
 
