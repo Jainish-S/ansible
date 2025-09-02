@@ -1,0 +1,25 @@
+# tasks/python-setup.yml
+- name: Install Python build dependencies
+  become: true
+  apt:
+    name:
+      - curl
+      - build-essential
+      - python3-pip
+    state: present
+  tags: &python_tags ["install", "python"]
+
+- name: Install uv (Python Environment Manager)
+  shell: "curl -LsSf https://astral.sh/uv/install.sh | sh"
+  args:
+    creates: "{{ lookup('env', 'HOME') }}/.cargo/bin/uv"
+  tags: *python_tags
+
+- name: Add uv to PATH in .zshrc if not already present
+  lineinfile:
+    path: "{{ lookup('env', 'HOME') }}/.zshrc"
+    line: 'export PATH="$HOME/.cargo/bin:$PATH"'
+    regexp: '^export PATH="\$HOME/\.cargo/bin:\$PATH"$'
+    state: present
+    create: yes
+  tags: *python_tags

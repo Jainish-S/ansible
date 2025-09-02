@@ -4,29 +4,29 @@
       [user]
           email = jainishsavalia@gmail.com
           name = Jainish Savalia
-    dest: "/home/jainish/.gitconfig-personal"
+    dest: "{{ lookup('env', 'HOME') }}/.gitconfig-personal"
     mode: "0644"
   tags:
     - git-personal
-- name: Create Genuin gitconfig
+- name: Create Work gitconfig
   copy:
     content: |
       [user]
-          email = jainish@begenuin.com
+          email = jainish@work.com
           name = Jainish Savalia
-    dest: "/home/jainish/.gitconfig-genuin"
+    dest: "/home/jainish/.gitconfig-work"
     mode: "0644"
   tags:
-    - git-genuin
+    - git-work
 - name: Configure global gitconfig with includes
   copy:
     content: |
       [includeIf "gitdir:~/personal/"]
           path = ~/.gitconfig-personal
       [includeIf "gitdir:~/work/"]
-          path = ~/.gitconfig-genuin
-    dest: "/home/jainish/.gitconfig"
+          path = ~/.gitconfig-work
+    dest: "{{ lookup('env', 'HOME') }}/.gitconfig"
     mode: "0644"
   tags:
     - git-personal
-    - git-genuin
+    - git-work

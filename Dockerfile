@@ -15,21 +15,21 @@ RUN apt-get update && \
 
 FROM base AS j
 
-ARG TAGS
+ARG UNAME=jainish
+ARG UID=1000
+ARG GID=1000
 
-RUN addgroup --gid 1000 jainish && \
-    adduser --uid 1000 --gid 1000 --gecos jainish --disabled-password jainish && \
-    echo "jainish ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/jainish && \
-    chmod 0440 /etc/sudoers.d/jainish
+RUN (addgroup --gid $GID $UNAME || true) && \
+    adduser --uid $UID --gid $GID --gecos $UNAME --disabled-password $UNAME && \
+    echo "$UNAME ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$UNAME && \
+    chmod 0440 /etc/sudoers.d/$UNAME
 
-USER jainish
-
-ENV USER=jainish
-
-WORKDIR /home/jainish
+USER $UNAME
+ENV USER=$UNAME
+WORKDIR /home/$UNAME
 
 FROM j
 
-COPY . .
+COPY --chown=$UNAME:$UNAME . .
+# ENTRYPOINT ["sh", "-c", "ansible-playbook $TAGS local.yml"]
 
-ENTRYPOINT ["sh", "-c", "ansible-playbook $TAGS local.yml"]

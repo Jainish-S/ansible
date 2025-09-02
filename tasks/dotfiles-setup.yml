@@ -1,0 +1,47 @@
+# tasks/dotfiles-setup.yml
+- name: Clone dotfiles repository
+  ansible.builtin.git:
+    repo: 'https://github.com/Jainish-S/dotfiles.git'
+    dest: "{{ lookup('env', 'HOME') }}/dotfiles"
+    version: main
+  tags:
+    - install
+    - dotfiles
+
+- name: Ensure .config directory exists
+  ansible.builtin.file:
+    path: "{{ lookup('env', 'HOME') }}/.config"
+    state: directory
+    mode: '0755'
+  tags:
+    - install
+    - dotfiles
+
+- name: Create all necessary config directories
+  ansible.builtin.file:
+    path: "{{ lookup('env', 'HOME') }}/{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - ".local/bin"
+  tags:
+    - install
+    - dotfiles
+
+- name: Create symlinks to dotfiles
+  ansible.builtin.file:
+    src: "{{ lookup('env', 'HOME') }}/dotfiles/{{ item.src }}"
+    dest: "{{ lookup('env', 'HOME') }}/{{ item.dest }}"
+    state: link
+    force: yes
+  loop:
+    - { src: '.zshrc', dest: '.zshrc' }
+    - { src: '.config/nvim', dest: '.config/nvim' }
+    - { src: '.ssh/config', dest: '.ssh/config' }
+    - { src: '.tmux.conf', dest: '.tmux.conf' }
+    - { src: '.aerospace.toml', dest: '.aerospace.toml' }
+    - { src: '.local/bin/tmux-sessionizer', dest: '.local/bin/tmux-sessionizer' }
+  tags:
+    - install
+    - dotfiles
+

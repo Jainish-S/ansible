@@ -1,0 +1,12 @@
+- name: Install Tmux
+  become: true
+  apt:
+    name: tmux
+    state: present
+  tags: &tmux_tags ["install", "productivity", "tmux"]
+
+- name: Install Tmux Plugin Manager (TPM)
+  ansible.builtin.git:
+    repo: 'https://github.com/tmux-plugins/tpm'
+    dest: "{{ lookup('env', 'HOME') }}/.tmux/plugins/tpm"
+  tags: *tmux_tags
