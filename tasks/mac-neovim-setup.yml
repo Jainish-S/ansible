@@ -1,0 +1,18 @@
+# tasks/mac-neovim-setup.yml
+- name: Install Neovim and Luarocks
+  community.general.homebrew:
+    name:
+      - neovim
+      - luarocks
+    state: present
+  tags:
+    - install
+    - neovim
+
+- name: Install luacheck for Neovim linting
+  community.general.luarocks:
+    name: luacheck
+    state: present
+  tags:
+    - install
+    - neovim

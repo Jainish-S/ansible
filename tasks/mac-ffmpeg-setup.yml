@@ -1,0 +1,14 @@
+# tasks/mac-ffmpeg-setup.yml
+- name: Install FFmpeg with Homebrew
+  community.general.homebrew:
+    name: ffmpeg
+    install_options:
+      - with-fdk-aac
+      - with-libvpx
+      - with-libvorbis
+      - with-libx264
+      - with-libx265
+    state: present
+  tags:
+    - install
+    - ffmpeg

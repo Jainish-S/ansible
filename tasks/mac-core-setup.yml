@@ -1,0 +1,26 @@
+# tasks/mac-core-setup.yml
+- name: Install System Packages with Homebrew
+  community.general.homebrew:
+    name:
+      - cmake
+      - pkg-config
+      - lua
+      - libtool
+      - gettext
+      - htop
+      - go
+      - ccache
+      - ninja
+      - python
+      - moreutils
+      - llvm
+      - openssl
+      - nmap
+      - bind
+      - iperf3
+      - wget
+      - telnet
+    state: present
+  tags:
+    - install
+    - core

@@ -1,0 +1,18 @@
+# tasks/mac-node-setup.yml
+- name: Install N via Homebrew
+  community.general.homebrew:
+    name: n
+    state: present
+  tags:
+    - install
+    - node
+
+- name: Install correct version of Node
+  shell: n 20
+  environment:
+    PATH: "/opt/homebrew/bin:/usr/local/bin:{{ ansible_env.PATH }}"
+  args:
+    creates: "{{ ansible_env.HOME }}/.n/versions/node/20.*"
+  tags:
+    - install
+    - node
