@@ -1,0 +1,8 @@
+# tasks/mac-docker-setup.yml
+- name: Install Docker Desktop for Mac
+  community.general.homebrew_cask:
+    name: docker
+    state: present
+  tags:
+    - install
+    - docker

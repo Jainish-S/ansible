@@ -1,0 +1,25 @@
+# tasks/mac-productivity-tools.yml
+- name: Install packages with Homebrew
+  community.general.homebrew:
+    name:
+      - tmux
+      - fzf
+      - tldr
+      - ripgrep
+      - jq
+      - reattach-to-user-namespace
+    state: present
+  tags:
+    - install
+    - productivity
+
+- name: Install packages with Homebrew Cask
+  community.general.homebrew_cask:
+    name:
+      - gimp
+      - keycastr
+      - monosnap
+    state: present
+  tags:
+    - install
+    - productivity
